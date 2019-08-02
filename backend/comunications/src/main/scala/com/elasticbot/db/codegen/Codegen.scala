@@ -25,9 +25,8 @@ object Codegen extends App {
       override def Column = new Column(_){
         override def rawType =
           model.name match {
-//            case "access" => "com.baklanvi.db.mapping.EventAccess.EventAccess"
-//            case "participant_type" => "com.baklanvi.db.mapping.EventParticipantType.EventParticipantType"
-//            case "participant_status" => "com.baklanvi.db.mapping.EventParticipantStatus.EventParticipantStatus"
+            case "answer_value" => "play.api.libs.json.JsValue"
+            case "action_type" => "com.elasticbot.services.answer.model.ActionType.ActionType"
             case _ => super.rawType
           }
       }

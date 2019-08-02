@@ -13,15 +13,23 @@ libraryDependencies ++= Seq(
   guice
 )
 
+val elastic4sVersion = "6.3.7"
+val slickPGExtensionsVersion = "0.17.2"
+
 libraryDependencies ++= Seq (
   "com.typesafe.play" %% "play-slick" % "5.0.0-M4",
   "com.typesafe.slick" %% "slick-codegen" % "3.3.2",
   "org.postgresql" % "postgresql" % "42.2.6",
-  "com.github.tminglei" %% "slick-pg" % "0.15.3",
-  "com.github.tminglei" %% "slick-pg_play-json" % "0.15.3",
-  "com.github.tminglei" %% "slick-pg_jts" % "0.17.2",
   "com.zaxxer" % "HikariCP" % "3.3.1",
-  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2"
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2",
+
+  "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % Test,
+
+  "com.github.tminglei" %% "slick-pg" % slickPGExtensionsVersion,
+  "com.github.tminglei" %% "slick-pg_play-json" % slickPGExtensionsVersion,
 )
 
 routesImport += "com.elasticbot.controllers.utils.Binders._"

@@ -2,24 +2,12 @@ version: "2.2"
 
 services:
   postgres:
-    build: ./pg_zombo
+    image: postgres:11.0
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: elastic_bot
     volumes:
-      - ./pg_zombo/init.sql:/docker-entrypoint-initdb.d/1-init-data.sql
+      - ./pg/init.sql:/docker-entrypoint-initdb.d/1-init-data.sql
     ports:
       - "5432:5432"
-  elasticsearch:
-    build: ./elasticsearch
-    environment:
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "ES_JVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-       soft: -1
-       hard: -1
-    ports:
-     - "9200:9200"
