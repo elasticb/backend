@@ -30,6 +30,8 @@ libraryDependencies ++= Seq (
 
   "com.github.tminglei" %% "slick-pg" % slickPGExtensionsVersion,
   "com.github.tminglei" %% "slick-pg_play-json" % slickPGExtensionsVersion,
+
+  "org.apache.httpcomponents" % "httpclient" % "4.5.9"
 )
 
 routesImport += "com.elasticbot.controllers.utils.Binders._"

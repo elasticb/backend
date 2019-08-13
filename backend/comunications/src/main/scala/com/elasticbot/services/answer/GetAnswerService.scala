@@ -4,7 +4,9 @@ import com.elasticbot.db.DatabaseTables.AnswerType
 import com.elasticbot.db.{DatabaseTables, _}
 import com.elasticbot.services.answer.GetAnswerService.{AnswerError, AnswerNotFound, AnswerSuccess, GetAnswerRequest, GetAnswerResponse}
 import com.elasticbot.services.answer.model.ActionType
-import com.elasticbot.services.answer.model.AnswersModel.{Answer, JsonAnswer, TextAnswer}
+import com.elasticbot.services.answer.model.AnswersModel.{Answer, TextAnswer}
+import com.elasticbot.services.bots.pbot.GetPBotAnswerService
+import com.elasticbot.services.bots.pbot.GetPBotAnswerService.GetPBotAnswerRequest
 import com.elasticbot.utils.{Logging, RandomUtils}
 import com.elasticbot.utils.Service.Service
 import com.google.inject.{Inject, Singleton}
@@ -13,7 +15,7 @@ import play.api.libs.json.{Format, Json}
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
 @Singleton
-class GetAnswerService @Inject() (database: ElasticbotDatabase)
+class GetAnswerService @Inject() (database: ElasticbotDatabase, pBotService: GetPBotAnswerService)
   extends Service[GetAnswerRequest, GetAnswerResponse] with Logging {
   import com.elasticbot.db.ExtendedPostgresDriver.api._
   private[this] implicit val ec: ExecutionContextExecutor = ExecutionContext.global
@@ -21,7 +23,8 @@ class GetAnswerService @Inject() (database: ElasticbotDatabase)
   override def apply(request: GetAnswerRequest): Future[GetAnswerResponse] = {
     for {
       databaseAnswers <- getDatabaseAnswers(request.question)
-    } yield getServiceResponse(databaseAnswers)
+      serviceResponse <- getServiceResponse(databaseAnswers, request)
+    } yield serviceResponse
   }
 
   private[this] def getDatabaseAnswers(question: String) = {
@@ -38,18 +41,30 @@ class GetAnswerService @Inject() (database: ElasticbotDatabase)
     database.writableDatabase.run(query)
   }
 
-  private[this] def getServiceResponse(answers: Seq[AnswerType]) = {
+  private[this] def getServiceResponse(answers: Seq[AnswerType], request: GetAnswerRequest) = {
     log.debug(s"getServiceResponse(answers) values: $answers")
     answers.isEmpty match {
       case true =>
         log.info("Empty answers")
-        AnswerNotFound
+        log.info("Try to get answer from pbot")
+        getPBotAnswer(request)
       case false =>
         log.info(s"Non empty answers: $answers")
         getServiceAnswer(getRandomAnswer(answers)) match {
-          case Some(answer) => AnswerSuccess(answer)
-          case None => AnswerError
+          case Some(answer) => Future.successful(AnswerSuccess(answer))
+          case None => Future.successful(AnswerError)
         }
+    }
+  }
+
+  private[this] def getPBotAnswer(request: GetAnswerRequest) = {
+    pBotService(GetPBotAnswerRequest(request.question)).map {
+      case Left(errors) =>
+        log.warn(s"PBotAnswerResponse errors: $errors")
+        AnswerNotFound
+      case Right(response) =>
+        log.info(s"PBotAnswer response: $response")
+        AnswerSuccess(TextAnswer(response.answer))
     }
   }
 
