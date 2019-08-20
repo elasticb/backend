@@ -1,7 +1,12 @@
+CREATE TABLE service_user (
+    uid VARCHAR(200) NOT NULL PRIMARY KEY,
+    first_name VARCHAR(200) NOT NULL,
+    last_name VARCHAR(200) NOT NULL
+);
 
 CREATE TABLE question (
   id BIGSERIAL NOT NULL PRIMARY KEY,
-  uid VARCHAR(200) NOT NULL DEFAULT 'unassigned',
+  uid VARCHAR(200) REFERENCES service_user(uid),
   question TEXT NOT NULL
 );
 
@@ -13,6 +18,18 @@ CREATE TABLE answer (
     question_fk BIGINT NOT NULL REFERENCES question(id)
 );
 
+CREATE TABLE dead_questions (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    uid VARCHAR(200) NOT NULL REFERENCES service_user(uid),
+    question TEXT NOT NULL
+);
+
+CREATE TABLE notification (
+    id BIGSERIAL NOT NULL PRIMARY KEY ,
+    notify_date DATE DEFAULT NULL,
+    title VARCHAR(150) NOT NULL,
+    content TEXT DEFAULT NULL
+);
 
 Create or replace function random_string(length integer) returns text as
 $$
@@ -46,6 +63,13 @@ $$ LANGUAGE 'plpgsql';
 CREATE EXTENSION pg_trgm;
 CREATE INDEX question_idx ON question USING GIST(question gist_trgm_ops);
 
-INSERT INTO question (id, uid, question) VALUES (1, '1', 'тестовый вопрос');
+INSERT INTO question (id, question) VALUES (1, 'тестовый вопрос');
 INSERT INTO answer (action_type, answer_value, question_fk) VALUES ('text_response', '{"answer":"тестовый ответ"}', 1);
 
+
+CREATE USER docker WITH ENCRYPTED PASSWORD 'docker';
+GRANT ALL ON TABLE service_user TO docker;
+GRANT ALL ON TABLE question TO docker;
+GRANT ALL ON TABLE answer TO docker;
+GRANT ALL ON TABLE dead_questions TO docker;
+GRANT ALL ON TABLE notification TO docker;
