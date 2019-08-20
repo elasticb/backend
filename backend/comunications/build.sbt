@@ -6,7 +6,6 @@ enablePlugins(PlayScala, PlayNettyServer)
 disablePlugins(PlayLayoutPlugin, PlayAkkaHttpServer)
 
 libraryDependencies ++= Seq(
-  //  jdbc,
   ehcache,
   ws,
   specs2 % Test,
@@ -26,12 +25,21 @@ libraryDependencies ++= Seq (
   "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion,
-  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % Test,
+
 
   "com.github.tminglei" %% "slick-pg" % slickPGExtensionsVersion,
   "com.github.tminglei" %% "slick-pg_play-json" % slickPGExtensionsVersion,
 
-  "org.apache.httpcomponents" % "httpclient" % "4.5.9"
+  "org.apache.httpcomponents" % "httpclient" % "4.5.9",
+  
+  "org.typelevel" %% "cats-core" % "1.6.0",
+  "org.typelevel" %% "cats-core" % "1.6.0",
+  "org.typelevel" %% "cats-effect" % "1.2.0",
+) ++ testDependencies
+
+val testDependencies = Seq (
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % Test,
+  "com.spotify" % "docker-client" % "3.5.12" % Test
 )
 
 routesImport += "com.elasticbot.controllers.utils.Binders._"

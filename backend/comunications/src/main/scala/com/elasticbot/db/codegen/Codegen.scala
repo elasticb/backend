@@ -11,10 +11,8 @@ object Codegen extends App {
   import com.elasticbot.db.ExtendedPostgresDriver.api._
 
   val db = Database.forConfig("db")
-  val requiredTables = Seq("question", "answer")
+  val requiredTables = Seq("service_user","question", "answer", "dead_questions", "notification")
 
-  println("TABLES")
-  println(ExtendedPostgresDriver.defaultTables.map(_.map(_.name.name).foreach(println)))
   val modelAction = ExtendedPostgresDriver.defaultTables
     .map(_.filter(p => requiredTables.contains(p.name.name.toLowerCase)))
       .flatMap(ExtendedPostgresDriver.createModelBuilder(_, false).buildModel)

@@ -8,4 +8,13 @@ object DatabaseTables {
 
   lazy val AnswersTable = Tables.Answer
   type AnswerType = Tables.Answer#TableElementType
+
+  lazy val ServiceUserTable = Tables.ServiceUser
+  type ServiceUserType = Tables.ServiceUser#TableElementType
+
+  lazy val DeadQuestionsTable = Tables.DeadQuestions
+  type DeadQuestionsType = Tables.DeadQuestions#TableElementType
+
+  lazy val NotificationTable = Tables.Notification
+  type NotificationType = Tables.Notification#TableElementType
 }
