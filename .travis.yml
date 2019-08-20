@@ -5,6 +5,8 @@ scala:
 
 script:
  - sh ci/backend.sh
+ after_success:
+ - sh ci/backend_coverage.sh
 
 branches:
   only:
